@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareQueue | Smart Healthcare Queue Management</title>
+    <meta
+      name="description"
+      content="Smart healthcare queue and appointment management platform for patients, doctors, staff, and administrators."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand">
+          <div class="brand-mark">+</div>
+          <span>CareQueue</span>
+        </div>
+        <nav class="nav-links">
+          <a href="#features">Features</a>
+          <a href="#dashboard">Dashboard</a>
+          <a href="#analytics">Analytics</a>
+          <a href="#contact">Contact</a>
+        </nav>
+        <div class="nav-actions">
+          <button class="btn btn-ghost">Login</button>
+          <button class="btn btn-primary">Book Demo</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container hero-grid">
+          <div class="hero-copy">
+            <span class="eyebrow">AI-powered hospital flow optimization</span>
+            <h1>Smarter queue management for better patient care.</h1>
+            <p>
+              A smarter hospital queue that reduces waiting time, prevents overcrowding,
+              and helps hospitals serve patients more efficiently.
+            </p>
+
+            <div class="hero-actions">
+              <button class="btn btn-primary">Book Appointment</button>
+              <button class="btn btn-secondary">View Dashboard</button>
+            </div>
+
+            <div class="trust-row">
+              <div>
+                <strong>12k+</strong>
+                <span>Appointments managed</span>
+              </div>
+              <div>
+                <strong>38%</strong>
+                <span>Reduced wait times</span>
+              </div>
+              <div>
+                <strong>24/7</strong>
+                <span>Queue monitoring</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-panel">
+            <div class="panel-card booking-card">
+              <div class="panel-head">
+                <div>
+                  <p class="label">Next appointment</p>
+                  <h3>Dr. Aisha Patel</h3>
+                </div>
+                <span class="status-pill">On time</span>
+              </div>
+
+              <div class="book-info">
+                <div>
+                  <span>Patient</span>
+                  <strong>Riya Shah</strong>
+                </div>
+                <div>
+                  <span>Queue ID</span>
+                  <strong>#Q-2418</strong>
+                </div>
+              </div>
+
+              <div class="queue-meter">
+                <div class="queue-header">
+                  <span>Estimated wait</span>
+                  <strong>18 mins</strong>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill" style="width: 72%"></div>
+                </div>
+                <div class="queue-meta">
+                  <span>Now: 7 patients ahead</span>
+                  <span>Priority alert</span>
+                </div>
+              </div>
+
+              <div class="mini-stats">
+                <div>
+                  <span>Doctors online</span>
+                  <strong>14</strong>
+                </div>
+                <div>
+                  <span>Urgent cases</span>
+                  <strong>03</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="feature-strip">
+        <div class="container feature-grid">
+          <div class="feature-item">
+            <div class="icon">📅</div>
+            <div>
+              <h4>Online booking</h4>
+              <p>Schedule appointments with automated reminders.</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="icon">🎫</div>
+            <div>
+              <h4>Digital queue</h4>
+              <p>Track real-time queue steps from arrival to consultation.</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="icon">🔔</div>
+            <div>
+              <h4>Smart alerts</h4>
+              <p>Notify patients about queue updates and schedule changes.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="section">
+        <div class="container">
+          <div class="section-heading">
+            <span class="eyebrow">Key features</span>
+            <h2>Built for patients, clinicians, and administrators.</h2>
+          </div>
+
+          <div class="feature-cards">
+            <article class="info-card">
+              <div class="card-icon blue">⏱️</div>
+              <h3>Waiting-time prediction</h3>
+              <p>
+                Forecast patient wait based on historical data, urgency levels, and live queue intensity.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <div class="card-icon green">🚨</div>
+              <h3>Priority handling</h3>
+              <p>
+                Prioritize urgent and high-risk cases to improve outcomes while maintaining fairness.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <div class="card-icon purple">📊</div>
+              <h3>Flow analytics</h3>
+              <p>
+                Identify bottlenecks, peak hours, and staffing gaps before they impact care quality.
+              </p>
+            </article>
+
+            <article class="info-card">
+              <div class="card-icon orange">🔄</div>
+              <h3>Auto rescheduling</h3>
+              <p>
+                Reduce no-shows and cancellations with dynamic rescheduling and reminder automation.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="dashboard" class="section alt-bg">
+        <div class="container dashboard-grid">
+          <div class="panel-block left-panel">
+            <div class="section-heading left">
+              <span class="eyebrow">Operational dashboard</span>
+              <h2>Monitor patient flow in real time.</h2>
+            </div>
+
+            <div class="queue-list">
+              <div class="queue-row active">
+                <div>
+                  <strong>Riya Shah</strong>
+                  <small>Consultation</small>
+                </div>
+                <span>In queue</span>
+              </div>
+              <div class="queue-row">
+                <div>
+                  <strong>Arjun Mehta</strong>
+                  <small>Lab review</small>
+                </div>
+                <span>12 mins</span>
+              </div>
+              <div class="queue-row">
+                <div>
+                  <strong>Sneha Verma</strong>
+                  <small>Pharmacy</small>
+                </div>
+                <span>Ready</span>
+              </div>
+              <div class="queue-row">
+                <div>
+                  <strong>Imran Khan</strong>
+                  <small>Follow-up</small>
+                </div>
+                <span>8 mins</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-block stat-panel">
+            <div class="stats-header">
+              <span class="eyebrow">Today</span>
+              <h3>Clinic performance</h3>
+            </div>
+
+            <div class="ring-wrap">
+              <div class="ring-chart">
+                <div class="ring-inner">
+                  <strong>84%</strong>
+                  <span>Efficiency</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-bars">
+              <div>
+                <label>Arrival rate</label>
+                <div class="mini-bar"><span style="width: 74%"></span></div>
+              </div>
+              <div>
+                <label>Doctor utilization</label>
+                <div class="mini-bar"><span style="width: 88%"></span></div>
+              </div>
+              <div>
+                <label>Urgent care response</label>
+                <div class="mini-bar"><span style="width: 91%"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="analytics" class="section">
+        <div class="container">
+          <div class="section-heading">
+            <span class="eyebrow">Insights</span>
+            <h2>Predictive analytics for better planning.</h2>
+          </div>
+
+          <div class="analytics-grid">
+            <div class="analytics-card large">
+              <div class="card-top">
+                <h3>Peak-hour overview</h3>
+                <span>Last 7 days</span>
+              </div>
+              <div class="chart-bars">
+                <span style="height: 34%"></span>
+                <span style="height: 44%"></span>
+                <span style="height: 65%"></span>
+                <span style="height: 78%"></span>
+                <span style="height: 92%"></span>
+                <span style="height: 68%"></span>
+                <span style="height: 82%"></span>
+              </div>
+              <div class="chart-labels">
+                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+              </div>
+            </div>
+
+            <div class="analytics-card">
+              <h3>Hospital priorities</h3>
+              <ul class="priority-list">
+                <li><span class="dot dot-red"></span> Emergency cases <strong>18</strong></li>
+                <li><span class="dot dot-yellow"></span> High-risk follow-ups <strong>11</strong></li>
+                <li><span class="dot dot-green"></span> Routine consults <strong>46</strong></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta-section">
+        <div class="container cta-box">
+          <div>
+            <span class="eyebrow">Ready to modernize care delivery?</span>
+            <h2>Transform patient queues into a seamless care experience.</h2>
+          </div>
+          <button class="btn btn-primary">Schedule a demo</button>
+        </div>
+      </section>
+    </main>
+
+    <footer id="contact" class="footer">
+      <div class="container footer-inner">
+        <div>
+          <div class="brand footer-brand">
+            <div class="brand-mark">+</div>
+            <span>CareQueue</span>
+          </div>
+          <p>Smart healthcare queue management for happier patients and efficient hospitals.</p>
+        </div>
+        <div class="footer-links">
+          <a href="#features">Features</a>
+          <a href="#dashboard">Dashboard</a>
+          <a href="#analytics">Analytics</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareQueue | Book Appointment</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body class="page-body">
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand">
+          <div class="brand-mark">+</div>
+          <span>CareQueue</span>
+        </div>
+        <nav class="nav-links">
+          <a href="{{ url_for('index') }}">Home</a>
+          <a href="{{ url_for('dashboard') }}">Dashboard</a>
+          <a href="{{ url_for('booking') }}">Booking</a>
+          <a href="{{ url_for('patient_portal') }}">Patient Portal</a>
+          <a href="{{ url_for('register') }}">Register</a>
+        </nav>
+        <div class="nav-actions">
+          <a class="btn btn-ghost" href="{{ url_for('login') }}">Login</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <section class="container section booking-layout">
+        <div class="booking-copy">
+          <span class="eyebrow">Book a consultation</span>
+          <h1>Schedule your visit in minutes.</h1>
+          <p>Choose the right doctor, department, and visit type to get an AI-powered estimated wait time.</p>
+        </div>
+
+        <div class="booking-card-form">
+          <form id="bookingForm" class="booking-form">
+            <label>
+              <span>Full name</span>
+              <input type="text" name="patient_name" placeholder="Enter patient name" required />
+            </label>
+            <label>
+              <span>Department</span>
+              <select name="department" required>
+                {% for specialty in specialties %}
+              <option value="{{ specialty }}">{{ specialty }} — {{ specialty_descriptions[specialty] }}</option>
+                {% endfor %}
+              </select>
+            </label>
+            <label>
+              <span>Doctor</span>
+              <select name="doctor" required>
+                <option value="">Choose a department first</option>
+              </select>
+            </label>
+            <div class="two-col">
+              <label>
+                <span>Date</span>
+                <input type="date" name="date" required />
+              </label>
+              <label>
+                <span>Time</span>
+                <select name="time" required>
+                  <option value="">Select doctor and date first</option>
+                </select>
+              </label>
+            </div>
+            <label>
+              <span>Urgency</span>
+              <select name="priority">
+                <option value="routine">Routine</option>
+                <option value="urgent">Urgent</option>
+                <option value="emergency">Emergency</option>
+              </select>
+            </label>
+
+            <div class="slot-pill">
+              <span class="label">Recommended slot</span>
+              <strong id="recommendedSlot">Finding the next available appointment...</strong>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Confirm booking</button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+      const doctorSelect = document.querySelector('select[name="doctor"]');
+      const departmentSelect = document.querySelector('select[name="department"]');
+      const dateInput = document.querySelector('input[name="date"]');
+      const timeSelect = document.querySelector('select[name="time"]');
+      const slotTag = document.getElementById('recommendedSlot');
+
+      async function refreshRecommendedSlot() {
+        const params = new URLSearchParams({
+          department: departmentSelect.value,
+          date: dateInput.value || new Date().toISOString().slice(0, 10)
+        });
+        const response = await fetch(`/api/booking-insights?${params}`);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Unable to load available slots.');
+        const doctor = doctorSelect.value;
+        const match = data.recommendations.find((slot) => slot.doctor === doctor);
+
+        timeSelect.innerHTML = '';
+        if (match) {
+          match.available_slots.forEach((slot) => {
+            const option = document.createElement('option');
+            option.value = slot;
+            option.textContent = slot;
+            timeSelect.appendChild(option);
+          });
+          slotTag.textContent = `${match.doctor} · ${match.date} at ${match.time}`;
+          return;
+        }
+
+        if (doctorSelect.value) {
+          const noSlots = document.createElement('option');
+          noSlots.value = '';
+          noSlots.textContent = 'No available appointments';
+          timeSelect.appendChild(noSlots);
+          slotTag.textContent = 'No available appointments for this doctor and date.';
+        } else if (data.recommendations.length) {
+          slotTag.textContent = 'Select a matching doctor to see available times.';
+        } else {
+          slotTag.textContent = `No ${departmentSelect.value} doctors have been registered yet. Please contact the clinic.`;
+        }
+      }
+
+      async function refreshDoctors() {
+        const params = new URLSearchParams({ department: departmentSelect.value });
+        const response = await fetch(`/api/doctors?${params}`);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Unable to load doctors.');
+        doctorSelect.innerHTML = '';
+        if (!data.doctors.length) {
+          const option = document.createElement('option');
+          option.value = '';
+          option.textContent = 'No doctors listed for this department';
+          doctorSelect.appendChild(option);
+          doctorSelect.disabled = true;
+          timeSelect.innerHTML = '<option value="">No available appointments</option>';
+          slotTag.textContent = `No ${departmentSelect.value} doctors have been registered yet. Please contact the clinic.`;
+          return;
+        }
+
+        doctorSelect.disabled = false;
+        data.doctors.forEach((doctor) => {
+          const option = document.createElement('option');
+          option.value = doctor.name;
+          option.textContent = `${doctor.name} · ${doctor.specialty}`;
+          doctorSelect.appendChild(option);
+        });
+        await refreshRecommendedSlot();
+      }
+
+      departmentSelect.addEventListener('change', refreshDoctors);
+      doctorSelect.addEventListener('change', refreshRecommendedSlot);
+      dateInput.addEventListener('change', refreshRecommendedSlot);
+      refreshDoctors().catch((error) => {
+        slotTag.textContent = error.message;
+      });
+
+      document.getElementById('bookingForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const form = event.target;
+        const data = Object.fromEntries(new FormData(form).entries());
+
+        const response = await fetch('/api/bookings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (response.ok && result.success) {
+          alert(result.message || 'Appointment booked successfully!');
+          form.reset();
+          refreshRecommendedSlot();
+        } else {
+          alert(result.message || 'Booking failed. Please try again.');
+        }
+      });
+    </script>
+  </body>
+</html>

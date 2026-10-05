@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareQueue | Hospital Report</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      body { font-family: 'Inter', sans-serif; padding: 32px; color: #11213d; }
+      .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+      .title { font-size: 2rem; font-weight: 800; }
+      .meta { color: #5f6f8e; }
+      .summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 24px 0; }
+      .card { background: #f5f8ff; border: 1px solid rgba(17,33,61,0.06); border-radius: 16px; padding: 18px; }
+      table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+      th, td { padding: 12px 14px; border-bottom: 1px solid rgba(17,33,61,0.08); text-align: left; }
+      .badge { display: inline-block; padding: 6px 10px; border-radius: 999px; font-weight: 700; }
+      .urgent { background: rgba(255,106,106,0.12); color: #b53535; }
+      .routine { background: rgba(59,201,167,0.12); color: #0d7e67; }
+      @media print { .no-print { display: none; } }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div>
+        <div class="title">CareQueue Hospital Operations Report</div>
+        <div class="meta">Generated on {{ now }}</div>
+      </div>
+      <div class="no-print">
+        <button onclick="window.print()" style="padding:10px 16px; border-radius:12px; border:0; background:#1e67ff; color:white; font-weight:700; cursor:pointer;">Print / Save as PDF</button>
+      </div>
+    </div>
+
+    <div class="summary">
+      <div class="card"><strong>{{ summary.appointments_managed }}</strong><br>Appointments managed</div>
+      <div class="card"><strong>{{ summary.average_wait }} mins</strong><br>Average wait</div>
+      <div class="card"><strong>{{ summary.urgent_cases }}</strong><br>Urgent cases</div>
+      <div class="card"><strong>{{ summary.efficiency }}%</strong><br>Efficiency</div>
+    </div>
+
+    <h3>Assigned patient overview</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Patient</th>
+          <th>Doctor</th>
+          <th>Status</th>
+          <th>Priority</th>
+          <th>Room</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in assignments %}
+        <tr>
+          <td>{{ item.patient }}</td>
+          <td>{{ item.doctor }}</td>
+          <td>{{ item.status }}</td>
+          <td><span class="badge {{ item.priority }}">{{ item.priority }}</span></td>
+          <td>{{ item.room }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h3 style="margin-top: 28px;">Alerts</h3>
+    <ul>
+      {% for alert in alerts %}
+      <li>{{ alert.title if alert.title else alert.message }}</li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>

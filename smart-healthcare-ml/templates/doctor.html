@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareQueue | Doctor Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body class="page-body">
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand"><div class="brand-mark">+</div><span>CareQueue</span></div>
+        <nav class="nav-links">
+          <a href="{{ url_for('index') }}">Home</a>
+          <a href="{{ url_for('doctor') }}">Doctor</a>
+          <a href="{{ url_for('admin') }}">Admin</a>
+          <a href="{{ url_for('dashboard') }}">Queue</a>
+        </nav>
+        <div class="nav-actions">
+          <a class="btn btn-ghost" href="{{ url_for('login') }}">Logout</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <section class="container doctor-layout">
+        <div class="doctor-header">
+          <div>
+            <span class="eyebrow">Doctor workspace</span>
+            <h1>Today's patient list</h1>
+          </div>
+          <button class="btn btn-primary">+ Add triage note</button>
+        </div>
+
+        <div class="stats-grid three-up">
+          <div class="summary-card"><span>Assigned patients</span><strong>18</strong></div>
+          <div class="summary-card"><span>Critical cases</span><strong>03</strong></div>
+          <div class="summary-card"><span>Avg. consult time</span><strong>12 mins</strong></div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-header">
+            <h2>Active queue</h2>
+            <span class="pill pill-warning">Live updates</span>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Department</th>
+                <th>Priority</th>
+                <th>Symptoms</th>
+                <th>Wait</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for patient in patients %}
+              <tr>
+                <td>{{ patient.name }}</td>
+                <td>{{ patient.service }}</td>
+                <td><span class="badge badge-{{ 'urgent' if patient.priority == 'urgent' else 'routine' }}">{{ patient.priority }}</span></td>
+                <td>{{ 'Chest pain' if patient.priority == 'urgent' else 'Routine assessment' }}</td>
+                <td>{{ patient.patients_ahead * 3 }} mins</td>
+                <td><button class="mini-btn">Review</button></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

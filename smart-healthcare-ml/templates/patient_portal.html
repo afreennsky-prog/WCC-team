@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareQueue | Patient Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body class="page-body">
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand">
+          <div class="brand-mark">+</div>
+          <span>CareQueue</span>
+        </div>
+        <nav class="nav-links">
+          <a href="{{ url_for('index') }}">Home</a>
+          <a href="{{ url_for('dashboard') }}">Dashboard</a>
+          <a href="{{ url_for('booking') }}">Booking</a>
+          <a href="{{ url_for('all_in_one') }}#chatWidget">Care Guide</a>
+          <a href="{{ url_for('patient_portal') }}">Patient Portal</a>
+          <a href="{{ url_for('login') }}">Login</a>
+        </nav>
+        <div class="nav-actions">
+          <a class="btn btn-primary" href="{{ url_for('booking') }}">Book visit</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <section class="container dashboard-layout">
+        <div class="doctor-header">
+          <div>
+            <span class="eyebrow">Patient convenience</span>
+            <h1>Everything you need before and after your visit.</h1>
+          </div>
+          <button class="btn btn-primary">Download care summary</button>
+        </div>
+
+        <div class="stats-grid four-up">
+          <div class="summary-card"><span>Next visit</span><strong>Tue, 10:30</strong></div>
+          <div class="summary-card"><span>Med reminders</span><strong>3</strong></div>
+          <div class="summary-card"><span>Lab results</span><strong>2 ready</strong></div>
+          <div class="summary-card"><span>Balance due</span><strong>₹480</strong></div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-header">
+            <h2>Convenience tools</h2>
+            <span class="pill pill-warning">Updated today</span>
+          </div>
+
+          <div class="feature-cards" style="padding: 0 24px 24px; grid-template-columns: repeat(3, minmax(0, 1fr));">
+            {% for feature in convenience_features %}
+            <article class="info-card">
+              <div class="card-icon {% if loop.index0 % 3 == 0 %}blue{% elif loop.index0 % 3 == 1 %}green{% else %}purple{% endif %}">✓</div>
+              <h3>{{ feature.title }}</h3>
+              <p>{{ feature.detail }}</p>
+              <div style="margin-top: 14px; display:flex; justify-content: space-between; align-items:center; color: var(--muted); font-size: 0.8rem;">
+                <span>Status</span>
+                <strong style="color: var(--primary);">{{ feature.status }}</strong>
+              </div>
+            </article>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="admin-grid">
+          <div class="table-card">
+            <div class="table-header">
+              <h2>Appointment journey</h2>
+            </div>
+            <div class="notification-list">
+              <div class="notification-item severity-info">
+                <div class="notification-mark"></div>
+                <div>
+                  <strong>Reminder sent</strong>
+                  <p>Your appointment reminder was delivered to your phone and email.</p>
+                </div>
+                <span>Today</span>
+              </div>
+              <div class="notification-item severity-medium">
+                <div class="notification-mark"></div>
+                <div>
+                  <strong>Prescription refill</strong>
+                  <p>Your metformin refill can be requested online before your next visit.</p>
+                </div>
+                <span>Tomorrow</span>
+              </div>
+              <div class="notification-item severity-high">
+                <div class="notification-mark"></div>
+                <div>
+                  <strong>Follow-up required</strong>
+                  <p>Blood report review is scheduled after consultation for better care guidance.</p>
+                </div>
+                <span>3 days</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-header">
+              <h2>Quick actions</h2>
+            </div>
+            <div class="util-list">
+              <button class="btn btn-secondary" type="button">Request prescription refill</button>
+              <button class="btn btn-secondary" type="button">Book teleconsultation</button>
+              <button class="btn btn-secondary" type="button">View invoice</button>
+              <button class="btn btn-secondary" type="button">Download health records</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

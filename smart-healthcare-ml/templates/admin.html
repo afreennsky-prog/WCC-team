@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareQueue | Admin Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body class="page-body">
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand"><div class="brand-mark">+</div><span>CareQueue</span></div>
+        <nav class="nav-links">
+          <a href="{{ url_for('index') }}">Home</a>
+          <a href="{{ url_for('admin') }}">Admin</a>
+          <a href="{{ url_for('doctor') }}">Doctor</a>
+          <a href="{{ url_for('dashboard') }}">Queue</a>
+        </nav>
+        <div class="nav-actions">
+          <a class="btn btn-ghost" href="{{ url_for('login') }}">Logout</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <section class="container admin-layout">
+        <div class="doctor-header">
+          <div>
+            <span class="eyebrow">Admin control center</span>
+            <h1>Hospital operations overview</h1>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a class="btn btn-secondary" href="{{ url_for('report') }}">Print report</a>
+            <a class="btn btn-primary" href="{{ url_for('export_report_csv') }}">Export CSV</a>
+          </div>
+        </div>
+
+        <div class="stats-grid four-up">
+          <div class="summary-card"><span>Occupancy</span><strong>82%</strong></div>
+          <div class="summary-card"><span>No-shows</span><strong>6%</strong></div>
+          <div class="summary-card"><span>Avg. wait</span><strong>18 mins</strong></div>
+          <div class="summary-card"><span>Pharmacy load</span><strong>71%</strong></div>
+        </div>
+
+        <div class="admin-grid">
+          <div class="table-card">
+            <div class="table-header">
+              <h2>Recent alerts</h2>
+            </div>
+            <div class="notification-list">
+              {% for n in notifications %}
+              <div class="notification-item severity-{{ n.severity }}">
+                <div class="notification-mark"></div>
+                <div>
+                  <strong>{{ n.title }}</strong>
+                  <p>{{ n.message }}</p>
+                </div>
+                <span>{{ n.time }}</span>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-header">
+              <h2>Resource utilization</h2>
+            </div>
+            <div class="util-list">
+              <div><label>Consultation rooms</label><div class="mini-bar"><span data-width="84%" style="width:84%"></span></div></div>
+              <div><label>Lab capacity</label><div class="mini-bar"><span data-width="66%" style="width:66%"></span></div></div>
+              <div><label>Pharmacy</label><div class="mini-bar"><span data-width="71%" style="width:71%"></span></div></div>
+              <div><label>ICU / emergency</label><div class="mini-bar"><span data-width="91%" style="width:91%"></span></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

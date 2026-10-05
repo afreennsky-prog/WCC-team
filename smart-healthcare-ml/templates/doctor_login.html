@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareQueue | Doctor Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body class="auth-body">
+    <div class="auth-shell">
+      <div class="auth-card">
+        <div class="brand auth-brand">
+          <div class="brand-mark">+</div>
+          <span>CareQueue</span>
+        </div>
+
+        <div class="auth-header">
+          <span class="eyebrow">Doctor access</span>
+          <h1>Secure physician login</h1>
+        </div>
+
+        <form id="doctorLoginForm" class="auth-form">
+          <label>
+            <span>Username</span>
+            <input type="text" name="username" placeholder="aisha" required />
+          </label>
+          <label>
+            <span>Password</span>
+            <input type="password" name="password" value="care123" required />
+          </label>
+
+          <button class="btn btn-primary auth-submit" type="submit">Sign in</button>
+        </form>
+
+        <p id="loginMessage" class="auth-footer"></p>
+        <p class="auth-footer">
+          Patient?
+          <a href="{{ url_for('login') }}">Patient sign in</a>
+        </p>
+        <p class="auth-footer">
+          New doctor?
+          <a href="{{ url_for('doctor_register') }}">Create a doctor login</a>
+        </p>
+      </div>
+    </div>
+
+    <script>
+      const form = document.getElementById('doctorLoginForm');
+      const message = document.getElementById('loginMessage');
+
+      form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const payload = Object.fromEntries(new FormData(form).entries());
+
+        const response = await fetch('/api/doctor-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        if (response.ok && result.success) {
+          message.textContent = 'Login successful';
+          window.location.href = result.redirect || '/doctor-panel';
+        } else {
+          message.textContent = result.message || 'Login failed';
+        }
+      });
+    </script>
+  </body>
+</html>

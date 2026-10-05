@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareQueue | Doctor Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body class="page-body">
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand"><div class="brand-mark">+</div><span>CareQueue</span></div>
+        <nav class="nav-links">
+          <a href="{{ url_for('index') }}">Home</a>
+          <a href="{{ url_for('dashboard') }}">Queue</a>
+          <a href="{{ url_for('doctor_panel') }}">Doctor Panel</a>
+          <a href="{{ url_for('admin') }}">Admin</a>
+        </nav>
+        <div class="nav-actions">
+          <a class="btn btn-ghost" href="{{ url_for('doctor_login') }}">Switch doctor</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <section class="container doctor-layout">
+        <div class="doctor-header">
+          <div>
+            <span class="eyebrow">Doctor workspace</span>
+            <h1>{{ doctor_name }} patient assignment board</h1>
+            <p>Specialty: {{ doctor_specialty }}</p>
+          </div>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <a class="btn btn-secondary" href="{{ url_for('hospital_report') }}">Print report</a>
+            <a class="btn btn-primary" href="{{ url_for('export_report_csv') }}">Export CSV</a>
+          </div>
+        </div>
+
+        <div class="stats-grid three-up">
+          <div class="summary-card"><span>Assigned patients</span><strong>{{ assignments|length }}</strong></div>
+          <div class="summary-card"><span>Critical cases</span><strong>{{ assignments|selectattr('priority','equalto','urgent')|list|length }}</strong></div>
+          <div class="summary-card"><span>Active rooms</span><strong>{{ assignments|length }}</strong></div>
+        </div>
+
+        <div class="table-card" style="padding: 20px 24px; margin-bottom: 24px;">
+          <form id="specialtyForm" class="two-col">
+            <label>
+              <span>My treatment specialty</span>
+              <select name="specialty" required>
+                {% for specialty in specialties %}
+              <option value="{{ specialty }}" {% if specialty == doctor_specialty %}selected{% endif %}>{{ specialty }} — {{ specialty_descriptions[specialty] }}</option>
+                {% endfor %}
+              </select>
+            </label>
+            <button class="btn btn-secondary" type="submit">Update specialty</button>
+          </form>
+          <p id="specialtyMessage" style="margin-top: 10px; color: var(--muted);"></p>
+        </div>
+
+        <div class="admin-grid">
+          <div class="table-card">
+            <div class="table-header">
+              <h2>Current assignments</h2>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Patient</th>
+                  <th>Room</th>
+                  <th>Status</th>
+                  <th>Priority</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in assignments %}
+                <tr>
+                  <td>{{ item.patient }}</td>
+                  <td>{{ item.room }}</td>
+                  <td>{{ item.status }}</td>
+                  <td><span class="badge badge-{{ 'urgent' if item.priority == 'urgent' else 'routine' }}">{{ item.priority }}</span></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="table-card">
+            <div class="table-header">
+              <h2>Assign patient</h2>
+            </div>
+            <form id="assignmentForm" class="auth-form" style="padding:0 24px 24px;">
+              <label>
+                <span>Patient</span>
+                <input type="text" name="patient_name" placeholder="Patient full name" required />
+              </label>
+              <label>
+                <span>Doctor</span>
+                <select name="doctor_name">
+                  {% for name in doctor_names %}
+                  <option value="{{ name }}" {% if name == doctor_name %}selected{% endif %}>{{ name }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label>
+                <span>Room</span>
+                <input type="text" name="room_name" value="Room 1" />
+              </label>
+              <label>
+                <span>Status</span>
+                <select name="status">
+                  <option>Assigned</option>
+                  <option>In consultation</option>
+                  <option>Awaiting lab</option>
+                  <option>Escalated</option>
+                </select>
+              </label>
+              <label>
+                <span>Priority</span>
+                <select name="priority">
+                  <option value="routine">Routine</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+              </label>
+              <button class="btn btn-primary" type="submit">Save assignment</button>
+            </form>
+            <p id="assignmentMessage" style="padding:0 24px 24px; color: var(--muted);"></p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      document.getElementById('specialtyForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const response = await fetch('/api/doctor-specialty', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(Object.fromEntries(new FormData(event.currentTarget).entries()))
+        });
+        const result = await response.json();
+        const message = document.getElementById('specialtyMessage');
+        message.textContent = response.ok && result.success
+          ? `Specialty updated to ${result.specialty}.`
+          : result.message || 'Unable to update specialty.';
+        if (response.ok && result.success) window.location.reload();
+      });
+
+      document.getElementById('assignmentForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const form = event.target;
+        const payload = Object.fromEntries(new FormData(form).entries());
+
+        const response = await fetch('/api/patient-assignment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        const message = document.getElementById('assignmentMessage');
+        if (response.ok && result.success) {
+          message.textContent = 'Patient assigned successfully.';
+          form.reset();
+          window.location.reload();
+        } else {
+          message.textContent = result.message || 'Assignment failed.';
+        }
+      });
+    </script>
+  </body>
+</html>

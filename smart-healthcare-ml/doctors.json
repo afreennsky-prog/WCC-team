@@ -1,0 +1,50 @@
+[
+  {
+    "username": "aisha",
+    "name": "Dr. Aisha Patel",
+    "password_hash": "scrypt:32768:8:1$R0RUNwo8S3BaXuMD$794f2c2d2835df66c31a5b12fc3f8ba9e953e532bcbb6b4283c97581a781a8880a1c81daa48853c2e6dce834ff40f6bbee3894161aec0258579a1b42db6f7bc0",
+    "specialty": "General Medicine"
+  },
+  {
+    "username": "rajesh",
+    "name": "Dr. Rajesh Kumar",
+    "password_hash": "scrypt:32768:8:1$4cU02muGSs5QZreU$d7bb35ef9d71eb5a2665247ca077ea2ae5043c0165360d13fb558a4979dbdf51434c50eea18542d06f638824ae4913e8621ce6e8f5998490a5abc65cdfc7d841",
+    "specialty": "Cardiology"
+  },
+  {
+    "username": "anika",
+    "name": "Dr. Anika Shah",
+    "password_hash": "scrypt:32768:8:1$sKSxXzFO6dEU5MwO$b4882190a57ddebfcfc9964d2401e1c445807e8a9379b5142ecbf6b4fb2fa7ba7d22b409c38481b66ee7d8d1a88b5fe83ddba6bc479a4ad7a0c0fb9ce06375d4",
+    "specialty": "Dermatology"
+  },
+  {
+    "username": "neha",
+    "name": "Dr. Neha Gupta",
+    "password_hash": "scrypt:32768:8:1$n1x0E018bkJDxIB6$1aa56bd92da62cd36c40ef2fe3f2d834127ba6192e9b6b38cf122d30a91847b528e24604c89557206799bd14636671b0deed809c7f8ae0f19edf8f4066ff284e",
+    "specialty": "Orthopedics"
+  },
+  {
+    "name": "DR.Pranavika",
+    "username": "pranavika_123",
+    "password_hash": "scrypt:32768:8:1$UxzQJRDNA6nBDemW$9164de03ad9306512c289cf80fcae8693be2482e082a29407439aa2d1b91197869e36cd54c9682a2e3fb0a316d98474c788bda3a17d9460efcd4422083dd27c8",
+    "specialty": "Unspecified"
+  },
+  {
+    "name": "Dr.Pranavika",
+    "username": "dr.pranavikasrikanth",
+    "specialty": "Gynecology",
+    "password_hash": "scrypt:32768:8:1$sZpct9NEmDmYvq8H$83b6d66ef87f68db2045c68e2ab1b79ecfe56cdbb00a7bde233d43d627671edb4364eab734fe0284c42c711c6597084efcab9cc71de4a0102fc3fc4a8e8d12a8"
+  },
+  {
+    "name": "Dr.Afreen",
+    "username": "dr.afreen",
+    "specialty": "Pediatrics",
+    "password_hash": "scrypt:32768:8:1$rq3CCSE1RcWShvwk$539be512b08402a9ae32d485c9625703aec607782967e5a0de502061e88ec31693c3d91b68bcc1b19bb2244765731e7e5ef23ea38b36d23131b755b46f832499"
+  },
+  {
+    "name": "Dr.Noorunnissa",
+    "username": "dr.noorunnissa",
+    "specialty": "Neurology",
+    "password_hash": "scrypt:32768:8:1$6hk6zFnsc5NbLuaP$aae13e565ee89a81c6ff6b99897528d8501c8a89aefa39a1d06c631e944a374cc37264b6db73800be7187fd124c9eaf1e9330eab4213bed921af0d212bbf3185"
+  }
+]

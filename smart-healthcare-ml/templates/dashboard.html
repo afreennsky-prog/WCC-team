@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareQueue | Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body class="page-body">
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand">
+          <div class="brand-mark">+</div>
+          <span>CareQueue</span>
+        </div>
+        <nav class="nav-links">
+          <a href="{{ url_for('index') }}">Home</a>
+          <a href="{{ url_for('dashboard') }}">Dashboard</a>
+          <a href="{{ url_for('booking') }}">Booking</a>
+          <a href="{{ url_for('patient_portal') }}">Patient Portal</a>
+          <a href="{{ url_for('register') }}">Register</a>
+        </nav>
+        <div class="nav-actions">
+          <a class="btn btn-ghost" href="{{ url_for('login') }}">Logout</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <section class="container dashboard-layout">
+        <div class="stats-grid">
+          <div class="summary-card"><span>Appointments</span><strong>{{ summary.appointments_managed }}</strong></div>
+          <div class="summary-card"><span>Average wait</span><strong>{{ summary.average_wait }} mins</strong></div>
+          <div class="summary-card"><span>Urgent cases</span><strong>{{ '%02d' % summary.urgent_cases }}</strong></div>
+          <div class="summary-card"><span>Efficiency</span><strong>{{ summary.efficiency }}%</strong></div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-header">
+            <h2>Live queue board</h2>
+            <a class="btn btn-primary" href="{{ url_for('booking') }}">New booking</a>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Department</th>
+                <th>Doctor</th>
+                <th>Queue ID</th>
+                <th>Status</th>
+                <th>ETA</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in patients %}
+              <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.service }}</td>
+                <td>{{ item.doctor }}</td>
+                <td>{{ item.queue_id }}</td>
+                <td><span class="badge badge-{{ 'urgent' if item.priority == 'urgent' else 'routine' }}">{{ item.status }}</span></td>
+                <td>{{ item.estimated_wait }} mins</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-card">
+          <div class="table-header">
+            <h2>Smart scheduling recommendations</h2>
+          </div>
+          <div class="recommendation-list">
+            {% for slot in recommendations %}
+            <div class="recommendation-item">
+              <strong>{{ slot.doctor }}</strong>
+              <span>{{ slot.date }} • {{ slot.time }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="dashboard-bottom-grid">
+          <div class="table-card">
+            <div class="table-header">
+              <h2>Patient lookup</h2>
+            </div>
+            <div class="lookup-panel">
+              <div class="search-row">
+                <input id="patientLookup" type="text" placeholder="Search by patient name" />
+                <button id="lookupButton" class="btn btn-primary" type="button">Search</button>
+              </div>
+              <div id="lookupResult" class="lookup-result">
+                Search for a patient to view booking, department, and queue status.
+              </div>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-header">
+              <h2>Care reminders</h2>
+            </div>
+            <div class="reminder-list">
+              {% for reminder in reminders %}
+              <div class="reminder-item">
+                <div>
+                  <strong>{{ reminder.patient }}</strong>
+                  <span>{{ reminder.type }}</span>
+                </div>
+                <small>{{ reminder.due }}</small>
+                <p>{{ reminder.message }}</p>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const lookupInput = document.getElementById('patientLookup');
+      const lookupResult = document.getElementById('lookupResult');
+      const lookupButton = document.getElementById('lookupButton');
+
+      async function searchPatient() {
+        const name = lookupInput.value.trim();
+        if (!name) {
+          lookupResult.textContent = 'Enter a patient name to search.';
+          return;
+        }
+
+        try {
+          const response = await fetch(`/api/patient-search?name=${encodeURIComponent(name)}`);
+          const data = await response.json();
+
+          if (!response.ok || !data.success) {
+            lookupResult.textContent = data.message || 'No patient record found.';
+            return;
+          }
+
+          const record = data.record;
+          const statusText = record.status || (record.kind === 'booking' ? 'Confirmed' : 'In queue');
+          lookupResult.innerHTML = `
+            <strong>${record.name}</strong><br>
+            <span>Doctor: ${record.doctor || 'Not assigned'}</span><br>
+            <span>Department: ${record.department || 'General care'}</span><br>
+            <span>Status: ${statusText}</span><br>
+            <span>${record.date ? `Date: ${record.date}` : ''}${record.time ? ` • ${record.time}` : ''}</span>
+          `;
+        } catch (error) {
+          lookupResult.textContent = 'Unable to search patient records right now.';
+        }
+      }
+
+      lookupButton.addEventListener('click', searchPatient);
+      lookupInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') searchPatient();
+      });
+    </script>
+  </body>
+</html>

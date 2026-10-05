@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareQueue | Unified Operations</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14213d;
+        --muted: #63718b;
+        --blue: #246bfd;
+        --green: #078b70;
+        --red: #c33b47;
+        --line: #e3eaf4;
+        --surface: #fff;
+        --background: #f3f7fc;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--background); color: var(--ink); font-family: Inter, "Segoe UI", Arial, sans-serif; }
+      button, input, select { font: inherit; }
+      button, a { -webkit-tap-highlight-color: transparent; }
+      .topbar { position: sticky; top: 0; z-index: 4; background: rgba(255,255,255,.94); border-bottom: 1px solid var(--line); }
+      .nav, main { width: min(1180px, calc(100% - 32px)); margin: auto; }
+      .nav { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+      .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.1rem; }
+      .brand-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px; color: #fff; background: linear-gradient(140deg,#41c8eb,var(--blue)); font-size: 1.5rem; }
+      .nav-links { display: flex; gap: 18px; flex-wrap: wrap; }
+      a { color: inherit; text-decoration: none; }
+      .nav-links a { color: var(--muted); font-size: .9rem; }
+      main { padding: 30px 0 60px; }
+      .hero { display: flex; justify-content: space-between; align-items: end; gap: 20px; margin: 10px 0 24px; }
+      .eyebrow { color: var(--blue); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; font-weight: 800; }
+      h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: -.045em; margin: 8px 0; }
+      h2 { font-size: 1.15rem; margin: 0; }
+      p { color: var(--muted); line-height: 1.55; }
+      .panel, .stat { border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: 0 12px 36px rgba(30,56,99,.05); }
+      .panel { padding: 22px; margin-bottom: 20px; }
+      .panel-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; }
+      .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 20px; }
+      .stat { padding: 18px; }
+      .stat span { display: block; color: var(--muted); font-size: .84rem; margin-bottom: 8px; }
+      .stat strong { font-size: 1.55rem; }
+      .grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 20px; align-items: start; }
+      .form-grid { display: grid; gap: 12px; }
+      .form-grid.two { grid-template-columns: 1fr 1fr; }
+      label { display: grid; gap: 6px; color: var(--muted); font-size: .84rem; font-weight: 650; }
+      input, select, textarea { width: 100%; min-height: 42px; padding: 9px 11px; border: 1px solid #d9e2ef; border-radius: 10px; background: #fff; color: var(--ink); }
+      .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 0 15px; border: 0; border-radius: 10px; background: var(--blue); color: white; cursor: pointer; font-weight: 750; }
+      .btn:hover { filter: brightness(.95); }
+      .btn.secondary { background: #eaf1ff; color: #2455aa; }
+      .btn.danger { background: var(--red); }
+      .btn.small { min-height: 34px; padding: 0 10px; font-size: .82rem; }
+      .button-row { display: flex; flex-wrap: wrap; gap: 10px; }
+      .notice { border-radius: 10px; padding: 11px 13px; margin: 12px 0 0; background: #edf4ff; color: #284e8c; font-size: .9rem; }
+      .notice.error { background: #fff0f0; color: #a12631; }
+      .notice.success { background: #eaf8f2; color: #087054; }
+      .table-wrap { overflow-x: auto; }
+      table { border-collapse: collapse; width: 100%; min-width: 620px; }
+      th, td { border-bottom: 1px solid var(--line); padding: 12px 10px; text-align: left; font-size: .88rem; }
+      th { color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-size: .72rem; }
+      .badge { display: inline-flex; border-radius: 99px; padding: 5px 9px; background: #eaf8f2; color: var(--green); font-size: .75rem; font-weight: 800; text-transform: capitalize; }
+      .badge.urgent, .badge.emergency { background: #fff0f0; color: var(--red); }
+      .badge.high { background: #fff5df; color: #8a5a00; }
+      .alerts { display: grid; gap: 10px; }
+      .alert { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px; border: 1px solid #f0d9dc; border-radius: 12px; background: #fff7f7; }
+      .alert strong { color: var(--red); }
+      .reminder { border: 1px solid var(--line); background: #f9fbfe; padding: 12px; border-radius: 12px; margin-top: 10px; }
+      .reminder small { display: block; color: var(--muted); margin-top: 5px; }
+      .hidden { display: none !important; }
+      .demo-note { font-size: .82rem; }
+      .chat-launcher { position: fixed; z-index: 8; right: 22px; bottom: 20px; min-height: 48px; border-radius: 999px; box-shadow: 0 8px 28px rgba(20,50,100,.25); }
+      .chat-panel { position: fixed; z-index: 9; right: 22px; bottom: 78px; width: min(365px, calc(100vw - 28px)); height: min(540px, calc(100vh - 110px)); display: flex; flex-direction: column; padding: 0; margin: 0; overflow: hidden; }
+      .chat-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px; border-bottom: 1px solid var(--line); }
+      .chat-header p { margin: 4px 0 0; font-size: .82rem; }
+      .chat-messages { display: flex; flex: 1; flex-direction: column; gap: 10px; overflow-y: auto; padding: 14px; }
+      .chat-bubble { max-width: 90%; padding: 10px 12px; border-radius: 14px; background: #edf4ff; color: var(--ink); font-size: .88rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+      .chat-bubble.user { align-self: flex-end; background: var(--blue); color: #fff; }
+      .chat-quick-questions { display: flex; flex-wrap: wrap; gap: 7px; max-height: 92px; overflow-y: auto; padding: 0 14px 10px; }
+      .chat-quick-questions button { border: 1px solid var(--line); border-radius: 999px; background: #fff; color: #2455aa; padding: 6px 9px; font-size: .76rem; cursor: pointer; }
+      .chat-form { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 12px; border-top: 1px solid var(--line); }
+      .chat-form textarea { min-height: 44px; max-height: 100px; resize: vertical; border-radius: 12px; }
+      .chat-disclaimer { margin: 0; padding: 0 14px 10px; font-size: .72rem; line-height: 1.4; }
+      footer { padding: 8px 0 28px; text-align: center; color: var(--muted); font-size: .8rem; }
+      @media (max-width: 820px) {
+        .stats { grid-template-columns: repeat(2,1fr); }
+        .grid { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 560px) {
+        .nav { align-items: flex-start; padding: 14px 0; flex-direction: column; gap: 12px; }
+        .nav-links { gap: 12px; }
+        .hero { align-items: flex-start; flex-direction: column; }
+        .stats { gap: 9px; }
+        .stat { padding: 13px; }
+        .stat strong { font-size: 1.25rem; }
+        .form-grid.two { grid-template-columns: 1fr; }
+        .panel { padding: 16px; }
+        .chat-launcher { right: 14px; bottom: 14px; }
+        .chat-panel { right: 8px; bottom: 70px; height: min(520px, calc(100vh - 90px)); }
+      }
+      @media print {
+        .topbar, .no-print, #loginPanel, #assignmentPanel, #reminderPanel, #chatWidget, footer { display: none !important; }
+        body { background: #fff; }
+        main { width: 100%; padding: 0; }
+        .panel, .stat { box-shadow: none; break-inside: avoid; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="nav">
+        <a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">+</span> CareQueue</a>
+        <nav class="nav-links" aria-label="Page sections">
+          <a href="#overview">Overview</a>
+          <a href="#emergency">Emergency</a>
+          <a href="#assignments">Assignments</a>
+          <a href="#reminders">Reminders</a>
+        </nav>
+        <div class="button-row no-print">
+          <a class="btn secondary small" href="{{ url_for('dashboard') }}">Full dashboard</a>
+          <button id="logoutButton" class="btn secondary small hidden" type="button">Sign out</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <span class="eyebrow">Unified clinic workspace</span>
+          <h1>CareQueue operations, in one place.</h1>
+          <p>Queue overview, doctor assignments, emergency escalation, simulated reminders, and printable/exportable reports.</p>
+        </div>
+        <div class="button-row no-print">
+          <a class="btn secondary" href="/export/report.csv">Download CSV</a>
+          <button class="btn" type="button" onclick="window.print()">Print / Save PDF</button>
+        </div>
+      </section>
+
+      <section id="loginPanel" class="panel hidden">
+        <div class="panel-heading">
+          <div>
+            <span class="eyebrow">Demo access</span>
+            <h2>Doctor sign in</h2>
+          </div>
+        </div>
+        <form id="loginForm" class="form-grid two">
+          <label>Username<input name="username" autocomplete="username" placeholder="aisha" required /></label>
+          <label>Password<input name="password" type="password" autocomplete="current-password" value="care123" required /></label>
+          <div class="button-row"><button class="btn" type="submit">Sign in</button></div>
+        </form>
+        <p class="demo-note">Demo accounts: aisha, rajesh, anika, or neha. Demo password: care123. This demonstration login is not suitable for production.</p>
+        <div id="loginMessage" role="status"></div>
+      </section>
+
+      <section id="workspace">
+        <div id="overview" class="stats">
+          <article class="stat"><span>Active queue</span><strong id="queueCount">—</strong></article>
+          <article class="stat"><span>Average predicted wait</span><strong id="averageWait">—</strong></article>
+          <article class="stat"><span>Urgent queue cases</span><strong id="urgentCount">—</strong></article>
+          <article class="stat"><span>Escalated cases</span><strong id="escalatedCount">—</strong></article>
+        </div>
+
+        <div class="grid">
+          <section class="panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Live data</span><h2>Current queue</h2></div>
+              <button id="refreshButton" class="btn secondary small no-print" type="button">Refresh</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Patient</th><th>Doctor</th><th>Department</th><th>Priority</th><th>Wait</th></tr></thead>
+                <tbody id="queueRows"><tr><td colspan="5">Loading queue…</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="emergency" class="panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Clinical safety</span><h2>Emergency triage & escalation</h2></div>
+            </div>
+            <form id="triageForm" class="form-grid">
+              <label>Patient name<input name="patient_name" placeholder="Patient full name" required /></label>
+              <label>Describe symptoms<textarea name="symptoms" rows="3" placeholder="Describe symptoms for a demo triage flag (not a diagnosis)" required></textarea></label>
+              <button class="btn danger" type="submit">Assess & escalate</button>
+            </form>
+            <div id="triageResult" role="status"></div>
+            <div id="escalationList" class="alerts"></div>
+            <p class="demo-note">Triage keywords are a demonstration only and do not replace clinical judgment or emergency services.</p>
+          </section>
+        </div>
+
+        <div id="assignments" class="grid" style="margin-top:20px;">
+          <section id="assignmentPanel" class="panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Care coordination</span><h2>Assign a patient</h2></div>
+            </div>
+            <form id="assignmentForm" class="form-grid">
+              <label>Patient name<input name="patient_name" required placeholder="Patient full name" /></label>
+              <label>Assigned doctor<select name="doctor_name" required>
+                <option>Dr. Aisha Patel</option><option>Dr. Rajesh Kumar</option><option>Dr. Anika Shah</option><option>Dr. Neha Gupta</option>
+              </select></label>
+              <div class="form-grid two">
+                <label>Room<input name="room_name" value="Room 1" required /></label>
+                <label>Priority<select name="priority"><option value="routine">Routine</option><option value="urgent">Urgent</option><option value="emergency">Emergency</option></select></label>
+              </div>
+              <label>Status<select name="status"><option>Assigned</option><option>In consultation</option><option>Awaiting lab</option><option>Escalated</option></select></label>
+              <button class="btn" type="submit">Save assignment</button>
+            </form>
+            <div id="assignmentMessage" role="status"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Team workflow</span><h2>Patient assignments</h2></div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Patient</th><th>Doctor</th><th>Status</th><th>Room</th><th>Priority</th></tr></thead>
+                <tbody id="assignmentRows"><tr><td colspan="5">Loading assignments…</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <div id="reminders" class="grid" style="margin-top:20px;">
+          <section id="reminderPanel" class="panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Communication</span><h2>Simulate a patient reminder</h2></div>
+            </div>
+            <form id="reminderForm" class="form-grid">
+              <label>Patient name<input name="patient_name" required placeholder="Patient full name" /></label>
+              <label>Delivery channel<select name="channel"><option value="SMS">SMS</option><option value="Email">Email</option></select></label>
+              <button class="btn" type="submit">Send demo reminder</button>
+            </form>
+            <div id="reminderMessage" role="status"></div>
+            <p class="demo-note">Simulation only: no SMS or email is actually sent.</p>
+          </section>
+          <section class="panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Activity</span><h2>Reminder log</h2></div>
+            </div>
+            <div id="reminderLog"><p>Loading reminders…</p></div>
+          </section>
+        </div>
+      </section>
+    </main>
+    <footer>CareQueue demo · Patient data shown here is sample data; use approved systems for real clinical records.</footer>
+
+    <div id="chatWidget">
+      <button id="chatLauncher" class="btn chat-launcher no-print" type="button" aria-expanded="false" aria-controls="patientChat">Medical Care Guide</button>
+      <section id="patientChat" class="panel chat-panel hidden" aria-label="Patient help chat">
+        <header class="chat-header">
+          <div><h2>Care guide</h2><p>Get general symptom routing or app help.</p></div>
+          <button id="chatClose" class="btn secondary small" type="button" aria-label="Close chat">Close</button>
+        </header>
+        <div id="chatMessages" class="chat-messages" role="log" aria-live="polite" aria-relevant="additions"></div>
+        <div class="chat-quick-questions" aria-label="Suggested questions">
+          <button type="button" data-question="I have a skin concern. Which department should I contact?">Skin / hair</button>
+          <button type="button" data-question="I have a headache. Which specialist should I contact?">Headache</button>
+          <button type="button" data-question="I have a cough. Which department should I contact?">Cough</button>
+          <button type="button" data-question="I have stomach pain. Which department should I contact?">Stomach</button>
+          <button type="button" data-question="My knee hurts. Which doctor should I see?">Joint / bone</button>
+          <button type="button" data-question="My child has a fever. Which department should I contact?">Child health</button>
+          <button type="button" data-question="I have a dental problem. Which doctor should I see?">Dental</button>
+          <button type="button" data-question="How do I book an appointment?">Book appointment</button>
+        </div>
+        <p class="chat-disclaimer">General navigation only—not a medical consultant. No diagnosis, treatment, or medication advice. For emergencies, contact local emergency services.</p>
+        <form id="chatForm" class="chat-form">
+          <textarea id="chatInput" name="message" maxlength="500" aria-label="Your question" placeholder="Describe the concern or ask an app question…" required></textarea>
+          <button id="chatSend" class="btn" type="submit">Send</button>
+        </form>
+      </section>
+    </div>
+
+    <script>
+      const sessionDoctor = {{ doctor_name|tojson }};
+      const loginPanel = document.getElementById('loginPanel');
+      const workspace = document.getElementById('workspace');
+      const loginMessage = document.getElementById('loginMessage');
+      const logoutButton = document.getElementById('logoutButton');
+
+      function showMessage(elementId, message, kind = '') {
+        const element = document.getElementById(elementId);
+        element.className = message ? `notice ${kind}` : '';
+        element.textContent = message;
+      }
+
+      function setSignedIn(signedIn) {
+        loginPanel.classList.toggle('hidden', signedIn);
+        workspace.classList.toggle('hidden', !signedIn);
+        logoutButton.classList.toggle('hidden', !signedIn);
+      }
+
+      function renderQueue(patients) {
+        document.getElementById('queueCount').textContent = patients.length;
+        const waits = patients.map((patient) => Number(patient.estimated_wait) || 0);
+        const average = waits.length ? waits.reduce((sum, value) => sum + value, 0) / waits.length : 0;
+        document.getElementById('averageWait').textContent = `${Math.round(average)} min`;
+        document.getElementById('urgentCount').textContent = patients.filter((patient) => ['urgent', 'emergency'].includes(patient.priority)).length;
+        document.getElementById('queueRows').innerHTML = patients.length ? patients.map((patient) => `
+          <tr>
+            <td>${escapeHtml(patient.name)}</td><td>${escapeHtml(patient.doctor)}</td>
+            <td>${escapeHtml(patient.service)}</td>
+            <td><span class="badge ${escapeHtml(patient.priority)}">${escapeHtml(patient.priority)}</span></td>
+            <td>${Math.round(Number(patient.estimated_wait) || 0)} min</td>
+          </tr>`).join('') : '<tr><td colspan="5">No active patients.</td></tr>';
+      }
+
+      function escapeHtml(value) {
+        const node = document.createElement('span');
+        node.textContent = value == null ? '' : String(value);
+        return node.innerHTML;
+      }
+
+      const chatPanel = document.getElementById('patientChat');
+      const chatLauncher = document.getElementById('chatLauncher');
+      const chatMessages = document.getElementById('chatMessages');
+      const chatInput = document.getElementById('chatInput');
+      const chatSend = document.getElementById('chatSend');
+
+      function addChatMessage(text, sender) {
+        const bubble = document.createElement('div');
+        bubble.className = `chat-bubble ${sender}`;
+        bubble.textContent = text;
+        chatMessages.appendChild(bubble);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      function setChatOpen(isOpen) {
+        chatPanel.classList.toggle('hidden', !isOpen);
+        chatLauncher.setAttribute('aria-expanded', String(isOpen));
+        if (isOpen) chatInput.focus();
+      }
+
+      addChatMessage('Hello! Describe a health concern in general terms and I can suggest which clinic department to contact, or ask me about CareQueue. I cannot diagnose, recommend treatment, or assess how serious a symptom is. Please do not share your name or other identifying details.', 'assistant');
+      chatLauncher.addEventListener('click', () => setChatOpen(chatPanel.classList.contains('hidden')));
+      document.getElementById('chatClose').addEventListener('click', () => setChatOpen(false));
+      if (window.location.hash === '#chatWidget') setChatOpen(true);
+
+      async function askCareQueue(question) {
+        const trimmedQuestion = question.trim();
+        if (!trimmedQuestion) return;
+        addChatMessage(trimmedQuestion, 'user');
+        chatInput.value = '';
+        chatSend.disabled = true;
+        try {
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: trimmedQuestion })
+          });
+          const data = await response.json();
+          if (!response.ok || !data.success) throw new Error(data.message || 'Chat is unavailable right now.');
+          addChatMessage(data.answer, 'assistant');
+        } catch (error) {
+          addChatMessage(error.message, 'assistant');
+        } finally {
+          chatSend.disabled = false;
+          chatInput.focus();
+        }
+      }
+
+      document.getElementById('chatForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+        askCareQueue(chatInput.value);
+      });
+      document.querySelectorAll('.chat-quick-questions button').forEach((button) => {
+        button.addEventListener('click', () => askCareQueue(button.dataset.question || ''));
+      });
+
+      async function loadAssignments() {
+        const response = await fetch('/api/patient-assignments');
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Unable to load assignments.');
+        const assignments = data.assignments || [];
+        document.getElementById('escalatedCount').textContent = assignments.filter((item) => item.status.toLowerCase() === 'escalated' || item.priority === 'emergency').length;
+        document.getElementById('assignmentRows').innerHTML = assignments.length ? assignments.map((item) => `
+          <tr>
+            <td>${escapeHtml(item.patient)}</td><td>${escapeHtml(item.doctor)}</td>
+            <td>${escapeHtml(item.status)}</td><td>${escapeHtml(item.room)}</td>
+            <td><span class="badge ${escapeHtml(item.priority)}">${escapeHtml(item.priority)}</span></td>
+          </tr>`).join('') : '<tr><td colspan="5">No patient assignments.</td></tr>';
+        document.getElementById('escalationList').innerHTML = assignments
+          .filter((item) => item.status.toLowerCase() === 'escalated' || item.priority === 'emergency')
+          .map((item) => `<div class="alert"><span><strong>Escalated: ${escapeHtml(item.patient)}</strong><br>${escapeHtml(item.doctor)} · ${escapeHtml(item.room)}</span><span class="badge emergency">${escapeHtml(item.priority)}</span></div>`)
+          .join('') || '<p>No active escalations.</p>';
+      }
+
+      async function loadReminders() {
+        const response = await fetch('/api/reminders');
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Unable to load reminders.');
+        const reminders = data.reminders || [];
+        document.getElementById('reminderLog').innerHTML = reminders.length ? reminders.map((item) => `
+          <article class="reminder"><strong>${escapeHtml(item.patient)} · ${escapeHtml(item.type)}</strong>
+          <small>${escapeHtml(item.channel || 'Care reminder')} · ${escapeHtml(item.due)}</small>
+          <p>${escapeHtml(item.message)}</p></article>`).join('') : '<p>No reminders have been logged.</p>';
+      }
+
+      async function refreshData() {
+        try {
+          const response = await fetch('/api/queue');
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.message || 'Could not refresh queue.');
+          renderQueue(data.patients || []);
+          await Promise.all([loadAssignments(), loadReminders()]);
+        } catch (error) {
+          showMessage('assignmentMessage', error.message, 'error');
+        }
+      }
+
+      document.getElementById('loginForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        loginMessage.textContent = '';
+        const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
+        try {
+          const response = await fetch('/api/doctor-login', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+          });
+          const data = await response.json();
+          if (!response.ok || !data.success) throw new Error(data.message || 'Sign in failed.');
+          setSignedIn(true);
+          await refreshData();
+        } catch (error) {
+          loginMessage.className = 'notice error';
+          loginMessage.textContent = error.message;
+        }
+      });
+
+      logoutButton.addEventListener('click', async () => {
+        await fetch('/api/doctor-logout', { method: 'POST' });
+        setSignedIn(false);
+      });
+
+      document.getElementById('refreshButton').addEventListener('click', refreshData);
+
+      document.getElementById('assignmentForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
+        try {
+          const response = await fetch('/api/patient-assignment', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+          });
+          const data = await response.json();
+          if (!response.ok || !data.success) throw new Error(data.message || 'Assignment failed.');
+          showMessage('assignmentMessage', 'Assignment saved.', 'success');
+          event.currentTarget.reset();
+          await refreshData();
+        } catch (error) {
+          showMessage('assignmentMessage', error.message, 'error');
+        }
+      });
+
+      document.getElementById('reminderForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
+        try {
+          const response = await fetch('/api/reminders', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+          });
+          const data = await response.json();
+          if (!response.ok || !data.success) throw new Error(data.message || 'Reminder simulation failed.');
+          showMessage('reminderMessage', `${payload.channel} simulation logged. Nothing was actually sent.`, 'success');
+          event.currentTarget.reset();
+          await loadReminders();
+        } catch (error) {
+          showMessage('reminderMessage', error.message, 'error');
+        }
+      });
+
+      document.getElementById('triageForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const payload = Object.fromEntries(new FormData(form).entries());
+        try {
+          const response = await fetch('/api/triage', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ symptoms: payload.symptoms })
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.message || 'Triage request failed.');
+          const emergency = data.risk === 'emergency';
+          showMessage('triageResult', `${data.risk.toUpperCase()} flag · ${data.recommended_action}. Demo recommendation only; seek emergency care for life-threatening symptoms.`, emergency ? 'error' : 'success');
+          if (emergency || data.risk === 'urgent') {
+            const assignment = {
+              patient_name: payload.patient_name,
+              doctor_name: 'Dr. Aisha Patel',
+              room_name: emergency ? 'Emergency bay' : 'Triage',
+              status: 'Escalated',
+              priority: emergency ? 'emergency' : 'urgent'
+            };
+            const assignResponse = await fetch('/api/patient-assignment', {
+              method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(assignment)
+            });
+            const assignData = await assignResponse.json();
+            if (!assignResponse.ok || !assignData.success) throw new Error(assignData.message || 'Could not save escalation.');
+            await refreshData();
+          }
+        } catch (error) {
+          showMessage('triageResult', error.message, 'error');
+        }
+      });
+
+      setSignedIn(Boolean(sessionDoctor));
+      if (sessionDoctor) refreshData();
+      else {
+        workspace.classList.add('hidden');
+        loginPanel.classList.remove('hidden');
+      }
+    </script>
+  </body>
+</html>

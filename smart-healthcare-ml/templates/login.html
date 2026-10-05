@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareQueue | Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body class="auth-body">
+    <div class="auth-shell">
+      <div class="auth-card">
+        <div class="brand auth-brand">
+          <div class="brand-mark">+</div>
+          <span>CareQueue</span>
+        </div>
+
+        <div class="auth-header">
+          <span class="eyebrow">Welcome back</span>
+          <h1>Sign in to your account</h1>
+        </div>
+
+        <form class="auth-form" id="loginForm">
+          <label>
+            <span>Email</span>
+            <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required />
+          </label>
+          <label>
+            <span>Password</span>
+            <input type="password" name="password" autocomplete="current-password" required />
+          </label>
+          <button class="btn btn-primary auth-submit" type="submit">Sign in</button>
+        </form>
+        <p id="authMessage" class="auth-footer" role="status"></p>
+
+        <p class="auth-footer">
+          Don’t have an account?
+          <a href="{{ url_for('register') }}">Register</a>
+        </p>
+        <p class="auth-footer">
+          Are you a clinician?
+          <a href="{{ url_for('doctor_login') }}">Open Doctor Portal</a>
+        </p>
+      </div>
+    </div>
+    <script>
+      document.getElementById('loginForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const message = document.getElementById('authMessage');
+        message.textContent = '';
+        try {
+          const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(Object.fromEntries(new FormData(event.currentTarget).entries()))
+          });
+          const result = await response.json();
+          if (!response.ok || !result.success) throw new Error(result.message || 'Sign in failed.');
+          window.location.href = result.redirect || '/patient-portal';
+        } catch (error) {
+          message.textContent = error.message;
+        }
+      });
+    </script>
+  </body>
+</html>

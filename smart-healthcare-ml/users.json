@@ -1,0 +1,11 @@
+[
+  {
+    "name": "Afreen",
+    "email": "afreen@gmail.com",
+    "phone": "8758758400",
+    "age": "4",
+    "gender": "Female",
+    "department": "Pediatrics",
+    "password_hash": "scrypt:32768:8:1$dbq8Ft7FIZvQI3Ws$39aeb3d445621cda11e45298acf9f9160a5a43ec79228e2e0f27e68cd615cf34b8e87fd7002c45f075096b092f80dcd10abae75884ef2c539d57bd604a3ad8a4"
+  }
+]
