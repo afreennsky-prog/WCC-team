@@ -16,9 +16,15 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_PATH = BASE_DIR / "ml" / "waiting_time_model.pkl"
-DATA_FILE = BASE_DIR / "bookings.json"
-USER_FILE = BASE_DIR / "users.json"
-DOCTOR_FILE = BASE_DIR / "doctors.json"
+if os.environ.get("VERCEL"):
+    os.environ.setdefault("CAREQUEUE_DATA_DIR", "/tmp/carequeue-data")
+    if not os.environ.get("CAREQUEUE_SECRET_KEY"):
+        raise RuntimeError("Set CAREQUEUE_SECRET_KEY in the Vercel project environment.")
+DATA_DIR = Path(os.environ.get("CAREQUEUE_DATA_DIR", BASE_DIR)).expanduser()
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+DATA_FILE = DATA_DIR / "bookings.json"
+USER_FILE = DATA_DIR / "users.json"
+DOCTOR_FILE = DATA_DIR / "doctors.json"
 
 DOCTOR_SPECIALTIES = (
     "General Medicine",
@@ -84,7 +90,7 @@ DOCTOR_SCHEDULE = {
     "Dr. Neha Gupta": ["09:30", "10:00", "10:30", "11:00", "12:00", "14:00", "15:30", "16:00"],
 }
 
-app = Flask(__name__, static_folder=".", static_url_path="")
+app = Flask(__name__, static_folder="public", static_url_path="")
 app.secret_key = os.environ.get("CAREQUEUE_SECRET_KEY", "carequeue-development-only-change-before-deploy")
 model = joblib.load(MODEL_PATH)
 

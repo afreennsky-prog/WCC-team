@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "app.py": {
+      "includeFiles": "{templates/**,ml/waiting_time_model.pkl}",
+      "maxDuration": 60
+    }
+  }
+}
